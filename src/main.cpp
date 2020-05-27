@@ -119,7 +119,7 @@ int main()
                              //2. sensor fusion data has all the required information of the vehicles in ego car visible environement
                           
                              //3. sesnor fusion data format for each car
-                             //["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, 								car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in 									frenet coordinates, car's d position in frenet coordinates]
+                             //["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates]
                      
                                //4. If there is car in front then out ego car has 3 options
                               //option 1 Try to move into left lane - if it is open, as it will be the fastest one
@@ -175,7 +175,7 @@ int main()
                                       //3. and if the car is in left lane
                                         if( left_open &&  left_lane >= 0 && ( d < (2+4*left_lane+2) && d > (2+4*left_lane-2) )  )
                                         { 
-                                          //we need to make sure there are no cars in front or behind in the future lane of our ego carin 30m 												range front as well as behind
+                                          //we need to make sure there are no cars in front or behind in the future lane of our ego carin 30m range front as well as behind
 
                                             double front_behind = abs(check_car_s - car_s); 
                                             if (front_behind < 30)
@@ -237,10 +237,12 @@ int main()
                              */
                           
                           	//To generator trajectory our ego car should follow for driving on the Highway-
-                          	//Inside data/highway_map.csv there is a list of waypoints that go all the way around the track. The waypoints are 								in the middle of the double-yellow dividing line in the center of the highway.
+                          	//Inside data/highway_map.csv there is a list of waypoints that go all the way around the track. 
+				//The waypoints are in the middle of the double-yellow dividing line in the center of the highway.
 
 
-                            // The basic idea here is we need to create widely spaced points (x,y) waypoints far spaced, at around 30m. 60m 								and 90m
+                            // The basic idea here is we need to create widely spaced points (x,y) waypoints far spaced, 
+				// at around 30m. 60m and 90m
                             // Then use spline tool to fill in the points inside those widely spaced waypoints. 
                           	// Another option here is to use the polynomial function that was taught in class.
                           
@@ -262,7 +264,7 @@ int main()
                           	// option 2 : there could be points left from previous path
 
 
-                            // option 1 - if previous size is almost empty, use the ego car current sttate as starting reference
+                            // option 1 - if previous size is almost empty, use the ego car current state as starting reference
                           	//the reference will remain the same as the previously defined ones ref_x,ref_y, ref_yaw
                             if (prev_size < 2)
                             {                           
@@ -303,46 +305,46 @@ int main()
                                 ptsy.push_back(ref_y);
                             }
 
-                            // 3. In frenet and to use spline library and to have plan the path we are adding evenly 30m, 60m, 90m spaced 									points ahead of the starting reference
+                            // 3. In frenet and to use spline library and to have plan the path we are adding evenly 30m, 60m, 90m spaced points ahead of the starting reference
                             vector<double> next_wp0 = getXY(car_s + 30, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
                             vector<double> next_wp1 = getXY(car_s + 60, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
                             vector<double> next_wp2 = getXY(car_s + 90, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
                           
-							//4. push the x coordinates into the create vectors pntsx 
+			   //4. push the x coordinates into the create vectors pntsx 
                             ptsx.push_back(next_wp0[0]);
                             ptsx.push_back(next_wp1[0]);
                             ptsx.push_back(next_wp2[0]);
-							//4. push the y coordinates into the create vectors pntsy
+				//4. push the y coordinates into the create vectors pntsy
                             ptsy.push_back(next_wp0[1]);
                             ptsy.push_back(next_wp1[1]);
                             ptsy.push_back(next_wp2[1]);
 
-                            // 5. Now change all the points in the pntsx and pntsy vector form from global coordinate to our ego car 									coordinates
+                            // 5. Now change all the points in the pntsx and pntsy vector form from global coordinate to our ego carcoordinates
                             for (int i = 0; i < ptsx.size(); i++)
                             {
                                 // shifting the points so that the last previous point is at x,y 0,0 
                                 double shift_x = ptsx[i] - ref_x;
                                 double shift_y = ptsy[i] - ref_y;
                               
-								// rotating the points so that the last previous point is at 0 degree angle
+			// rotating the points so that the last previous point is at 0 degree angle
                                 ptsx[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
                                 ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
                             }
 
 
-                            // 6. create a spline -this is used for thecraeting the trajectory
+                            // 6. create a spline -this is used for the craeting the trajectory
                             tk::spline s;
 
                             // 7. set(x,y) points to the spline- the vector of pnts having 5 points each right now in pntsx and pntsy
                             s.set_points(ptsx, ptsy);
 
-                            // 8. Now we will be filling in the weidely spaced waypoints at 30,60 and 90m and for saving those points we create 								two vectors as shown below - This are the points define the actual (x,y) points we will use for the planner 
+                            // 8. Now we will be filling in the weidely spaced waypoints at 30,60 and 90m and for saving those points we create two vectors as shown below - This are the points define the actual (x,y) points we will use for the planner 
                           		// the car will visit sequentially every .02 seconds
                             vector<double> next_x_vals;
                             vector<double> next_y_vals;
 
 
-                            // 9. First we need to add all the remaining previous path points from last time this is for smooth transition from 								last run to new run- so the first few points in the path planning trajectory will be the previous path points. 
+                            // 9. First we need to add all the remaining previous path points from last time this is for smooth transition from last run to new run- so the first few points in the path planning trajectory will be the previous path points. 
                             for (int i = 0; i < previous_path_x.size(); i++)
                             {
                                 next_x_vals.push_back(previous_path_x[i]);
@@ -366,10 +368,10 @@ int main()
                           
                            	// 11. Now we will fill in the remaining points using spline in 30 m distance 
                           
-							// The defined total number of points that we wnat is 50, out of 50 we have fed in the previous points into the 								vector for smooth transition
+							// The defined total number of points that we wnat is 50, out of 50 we have fed in the previous points into the vector for smooth transition
                             for (int i = 1; i <= 50 - previous_path_x.size(); i++)
                             { 
-								// All the next points will be added after the 0,0 points and each point is placed x_step ahead of the last 								point
+								// All the next points will be added after the 0,0 points and each point is placed x_step ahead of the last point
                                 double x_point = x_add_on + x_step;
                               	// getting the y from spline library 
                                 double y_point = s(x_point);
