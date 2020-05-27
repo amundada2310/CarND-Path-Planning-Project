@@ -112,115 +112,6 @@ int main()
                             {
                                 car_s = end_path_s;
                             }
-
-                            //considering for collision issue we will be taking advantage of the sensor fusion data
-                            //sensor fusion data has all teh ifnormation about the vehicle around us.
-                            /*bool too_close = false;
-                            bool left_open = false;
-                            bool right_open = false;
-
-                            //sesnor fusion data format
-                            //["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, 									car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in 									frenet coordinates, car's d position in frenet coordinates]
-
-                            //go through all the sensor fusion data
-                            for (int i = 0; i < sensor_fusion.size(); i++)
-                            {
-                                //first we will check if there is any car in my lane
-                                // take the d value of the ith car
-                                double d = sensor_fusion[i][6];
-
-                                //take the velocity of the car in way and calculate its speed
-                                double vx = sensor_fusion[i][3];
-                                double vy = sensor_fusion[i][4];
-                                double check_car_speed = sqrt(vx * vx + vy * vy);
-                                //also check how far the car is 
-                                double check_car_s = sensor_fusion[i][5];
-
-                                check_car_s += double(prev_size) * 0.02 * check_car_speed;
-                                int left_lane = lane - 1;
-                                int right_lane = lane + 1;
-                              
-                                //check if the car is in our ego car lane
-                                if( d < (2+4*lane+2) && d > (2+4*lane-2) )
-                                {
-
-                                    //check if the car is in front of our ego car and is within 30 m in front of ego car
-                                    if( check_car_s > car_s && (check_car_s - car_s) < 30 )
-                                    {
-                                        //reduce the speed
-                                        //ref_vel = 29.5;//MPH
-                                        //turn the flag on so that we can change lanes
-                                        too_close = true;
-                                      
-                                     }
-
-                                 }
-                               
-                              
-                                //make sure we are only moving into left lane, not going out or other side of road
-                                if(left_lane >=0)
-                                {
-                                  //check if there is any car in the left 
-                                  if( d < (2+4*left_lane+4) && d > (2+4*left_lane-2) )
-                                  {
-                                    //check if there is any car 30 m in front or behind of our ego car future position in left lane
-                                    double front_back = abs(check_car_s - car_s);
-                                    
-                                    if( front_back > 30) 
-                                    {
-                                      //turn the flag on so that we can change lanes
-                                       left_open = true;
-                                    }
-                                  }
-                                }
-                                
-                              
-                                //make sure we are only moving into right lane, not going out or other side of road
-                                if(right_lane >= 0)
-                                {
-                                  //check if there is any car in the right
-                                  if( d < (2+4*right_lane+2) && d > (2+4*right_lane-4) )
-                                  {
-                                    //check if there is any car 30 m in front or behind of our ego car future position in left lane
-                                    double front_back = abs(check_car_s - car_s);
-                                    
-                                    if( front_back > 30) 
-                                    {
-                                      //turn the flag on so that we can change lanes
-                                       right_open = true;
-                                    }
-                                  }
-                                }
-                              
-                            }
-                     
-                              
-
-                              
-                              if (too_close)
-                              {
-                                
-                                ref_vel = ref_vel - 0.224;//(//decrement the velocity by 5m/s2 rate)
-                                
-                                if(lane > 0 && lane <= 2 && left_open)
-                                {
-                                  lane = lane-1;
-                                  
-                                }
-                                else if (lane >= 0 && lane < 2 && right_open)
-                                {
-                                  lane = lane+1;
-                                  
-                                }
-
-                              }
-                          
-                              else if (ref_vel < 49.5)
-                              {
-                                  ref_vel = ref_vel + 0.224;//(//increment the velocity by 10m/s2 rate)
-                                //this is a highway incase we stop anywhere so while coming on road we dont want to be very slow.
-                              }*/
-                          
                           
 //--------------------------------------------------------------------------------------------------------------   
                           //To avoid collisons and do lane changes without any issues
@@ -235,10 +126,10 @@ int main()
                               //option 2 If left is not open then try to move into right lane - if it is open.
                               //option 3 If no lanes are open just reduce your speed and keep going in the same lane.
                           
-                          			// consider 3 flags
+                          		// consider 3 flags
                           	        bool too_close = false;//to check if there is a car in path of our ego lane
-                                    bool left_open = true;// to check if the left lane is open
-                                    bool right_open = true;// to check if right lane is open
+                                    	bool left_open = true;// to check if the left lane is open
+                                    	bool right_open = true;// to check if right lane is open
 
 
                                     // go through all the sensor fusion data - all car that are detected by sensors
@@ -252,7 +143,7 @@ int main()
                                 		//take the velocity of the car and calculate its speed
                                 		double vx = sensor_fusion[i][3];
                                 		double vy = sensor_fusion[i][4];
-                                        // calculate speed
+                                        	// calculate speed
                                 		double check_speed = sqrt(vx*vx + vy*vy);
                                 		//also check how far the car is by taking s coordinate into consideration
                                 		double check_car_s = sensor_fusion[i][5];                                          
@@ -294,7 +185,7 @@ int main()
                                             }
                                         }
                                       
-									  //Right Lane move
+				      //Right Lane move
                                       //check 3 things first - 
                                       //1. if the lane is open and 
                                       //2. if the right lane >= 0 is not on the other side of yellow lanes
